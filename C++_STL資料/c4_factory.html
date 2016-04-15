@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="github_hu.css" type="text/css" />
+</head>
+<body>
+<h1 id="c_stl資料">C++_STL資料</h1>
+<h2 id="今回の内容">今回の内容</h2>
+<ul>
+<li>デザインパターンのFactoryの基本的なやり方</li>
+</ul>
+<h2 id="factory">factory</h2>
+<p>今回は敵のFactoryを作る。<br />下の例では、受け取ったstringのキーに応じて、生成される敵が分岐する。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;memory&gt;</span>
+<span class="ot">#include &lt;string&gt;</span>
+
+<span class="kw">class</span> IEnemy{
+<span class="kw">public</span>:
+    <span class="kw">virtual</span> <span class="dt">void</span> update() = <span class="dv">0</span>;
+};
+
+
+<span class="kw">class</span> EnemyA : <span class="kw">public</span> IEnemy{
+<span class="kw">public</span>:
+    <span class="dt">void</span> update(){
+        std::cout &lt;&lt; <span class="st">&quot;EnemyA update called&quot;</span> &lt;&lt; std::endl;
+    }
+};
+
+<span class="kw">class</span> EnemyB : <span class="kw">public</span> IEnemy{
+<span class="kw">public</span>:
+    <span class="dt">void</span> update(){
+        std::cout &lt;&lt; <span class="st">&quot;EnemyB update called&quot;</span> &lt;&lt; std::endl;
+    }
+};
+
+<span class="kw">class</span> EnemyC : <span class="kw">public</span> IEnemy{
+<span class="kw">public</span>:
+    <span class="dt">void</span> update(){
+        std::cout &lt;&lt; <span class="st">&quot;EnemyC update called&quot;</span> &lt;&lt; std::endl;
+    }
+};
+
+
+<span class="kw">class</span> EnemyFactory{
+<span class="kw">public</span>:
+    std::shared_ptr&lt;IEnemy&gt; make(std::string key){
+        <span class="kw">if</span> (key == <span class="st">&quot;EnemyA&quot;</span>){
+            <span class="kw">return</span> std::make_shared&lt;EnemyA&gt;();
+        }
+        <span class="kw">else</span> <span class="kw">if</span> (key == <span class="st">&quot;EnemyB&quot;</span>){
+            <span class="kw">return</span> std::make_shared&lt;EnemyB&gt;();
+        }
+        <span class="kw">else</span> <span class="kw">if</span> (key == <span class="st">&quot;EnemyC&quot;</span>){
+            <span class="kw">return</span> std::make_shared&lt;EnemyC&gt;();
+        }
+        <span class="kw">return</span> <span class="kw">nullptr</span>;
+    }
+};
+
+
+<span class="dt">int</span> main()
+{
+    EnemyFactory e_fac;
+    
+    std::shared_ptr&lt;IEnemy&gt; ptrA = e_fac.make(<span class="st">&quot;EnemyA&quot;</span>);
+    std::shared_ptr&lt;IEnemy&gt; ptrB = e_fac.make(<span class="st">&quot;EnemyB&quot;</span>);
+    std::shared_ptr&lt;IEnemy&gt; ptrC = e_fac.make(<span class="st">&quot;EnemyC&quot;</span>);
+
+    ptrA-&gt;update();
+    ptrB-&gt;update();
+    ptrC-&gt;update();
+}</code></pre>
+<h2 id="mapを使ったfactory">mapを使ったfactory</h2>
+<p>上の例では、elseifが沢山出てきたが、stirng型をキーとし、functionを要素に持つマップを使うことで、それを回避できる。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;memory&gt;</span>
+<span class="ot">#include &lt;string&gt;</span>
+<span class="ot">#include &lt;map&gt;</span>
+<span class="ot">#include &lt;functional&gt;</span>
+
+<span class="kw">class</span> IEnemy{
+<span class="kw">public</span>:
+    <span class="kw">virtual</span> <span class="dt">void</span> update() = <span class="dv">0</span>;
+};
+
+
+<span class="kw">class</span> EnemyA : <span class="kw">public</span> IEnemy{
+<span class="kw">public</span>:
+    <span class="dt">void</span> update(){
+        std::cout &lt;&lt; <span class="st">&quot;EnemyA update called&quot;</span> &lt;&lt; std::endl;
+    }
+};
+
+<span class="kw">class</span> EnemyB : <span class="kw">public</span> IEnemy{
+<span class="kw">public</span>:
+    <span class="dt">void</span> update(){
+        std::cout &lt;&lt; <span class="st">&quot;EnemyB update called&quot;</span> &lt;&lt; std::endl;
+    }
+};
+
+<span class="kw">class</span> EnemyC : <span class="kw">public</span> IEnemy{
+<span class="kw">public</span>:
+    <span class="dt">void</span> update(){
+        std::cout &lt;&lt; <span class="st">&quot;EnemyC update called&quot;</span> &lt;&lt; std::endl;
+    }
+};
+
+
+<span class="kw">class</span> EnemyFactory{
+<span class="kw">public</span>:
+    EnemyFactory(){
+        fac_map.emplace(<span class="st">&quot;EnemyA&quot;</span>, [](){
+            <span class="kw">return</span> std::make_shared&lt;EnemyA&gt;();
+        });
+        fac_map.emplace(<span class="st">&quot;EnemyB&quot;</span>, [](){
+            <span class="kw">return</span> std::make_shared&lt;EnemyB&gt;();
+        });
+        fac_map.emplace(<span class="st">&quot;EnemyC&quot;</span>, [](){
+            <span class="kw">return</span> std::make_shared&lt;EnemyC&gt;();
+        });
+    }
+
+    std::map&lt;std::string, std::function&lt;std::shared_ptr&lt;IEnemy&gt;()&gt; &gt; fac_map;
+
+    std::shared_ptr&lt;IEnemy&gt; make(std::string key){
+        <span class="kw">if</span> (fac_map.find(key) != fac_map.end()){
+            <span class="kw">return</span> fac_map[key]();
+        }
+        <span class="kw">return</span> <span class="kw">nullptr</span>;
+    }
+};
+
+
+<span class="dt">int</span> main()
+{
+    EnemyFactory e_fac;
+    
+    std::shared_ptr&lt;IEnemy&gt; ptrA = e_fac.make(<span class="st">&quot;EnemyA&quot;</span>);
+    std::shared_ptr&lt;IEnemy&gt; ptrB = e_fac.make(<span class="st">&quot;EnemyB&quot;</span>);
+    std::shared_ptr&lt;IEnemy&gt; ptrC = e_fac.make(<span class="st">&quot;EnemyC&quot;</span>);
+
+    ptrA-&gt;update();
+    ptrB-&gt;update();
+    ptrC-&gt;update();
+}</code></pre>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="github_hu.css" type="text/css" />
+</head>
+<body>
+<h1 id="c_stl資料">C++_STL資料</h1>
+<h2 id="今回の内容">今回の内容</h2>
+<ul>
+<li>std::weak_ptr</li>
+</ul>
+<blockquote>
+<p>参考ページ<br /><a href="http://cpprefjp.github.io/reference/memory/weak_ptr.html">cpprefjp - C++ Library Reference weak_ptr (C++11)</a></p>
+</blockquote>
+<p>今回は、シェアードの監視者weak_ptrについて扱う。</p>
+<h2 id="stdweak_ptr">std::weak_ptr</h2>
+<p>weak_ptrは、shared_ptrを監視するためのものである。<br />shared_ptrが参照しているメモリは、shared_ptrが参照されている間は開放されない。<br />weak_ptrを使う例：<br />敵へのホーミング弾を実装する時に、弾が敵へのshared_ptrを持っていると、敵が撃破されても弾があるかぎり敵のメモリが解放されない。<br />しかし、代わりにweak_ptrを使うと、敵が撃破された時に敵のメモリは開放され、またweak_ptrが指している対象のメモリが解放されたことを知ることができる。</p>
+<p>expired()関数は、監視対象のメモリが解放されていればtrue,そうでなければfalseを返す関数。<br />lock()関数は、監視対象のshared_ptrを返す関数。<br />以下の例では、Enemyクラスのshared_ptrにweak_ptrを使っている。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;memory&gt;</span>
+
+<span class="kw">class</span> Enemy{
+<span class="kw">public</span>:
+    <span class="dt">double</span> x;
+    Enemy(<span class="dt">double</span> x_) : x(x_){}
+};
+
+<span class="dt">int</span> main()
+{
+    std::weak_ptr&lt;Enemy&gt; w_ptr;
+
+    {
+        std::shared_ptr&lt;Enemy&gt; s_ptr = std::make_shared&lt;Enemy&gt;(<span class="dv">6</span>);
+
+        <span class="co">//ウィークポインタにs_ptrを登録</span>
+        w_ptr = s_ptr;
+
+        <span class="co">//expried()を使用し、メモリが解放されているか調べる</span>
+        <span class="kw">if</span> (w_ptr.expired()){
+            std::cout &lt;&lt; <span class="st">&quot;w_ptrが指しているメモリはすでに解放されています&quot;</span> &lt;&lt; std::endl;
+        }
+        <span class="kw">else</span>{
+            <span class="co">//lock()を使用してシェアードポインタを取得し、表示</span>
+            std::cout &lt;&lt; w_ptr.lock()-&gt;x &lt;&lt; std::endl;
+        }
+
+        <span class="co">//ここでスコープを抜けるので、s_ptrは解放される</span>
+    }
+
+
+    <span class="kw">if</span> (w_ptr.expired()){
+        std::cout &lt;&lt; <span class="st">&quot;w_ptrが指しているメモリはすでに解放されています&quot;</span> &lt;&lt; std::endl;
+    }
+    <span class="kw">else</span>{
+        std::cout &lt;&lt; w_ptr.lock()-&gt;x &lt;&lt; std::endl;
+    }
+}</code></pre>
+</body>
+</html>

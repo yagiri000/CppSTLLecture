@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="github_hu.css" type="text/css" />
+</head>
+<body>
+<h1 id="c_stl資料">C++_STL資料</h1>
+<h2 id="今回の内容">今回の内容</h2>
+<ul>
+<li>typeid</li>
+</ul>
+<blockquote>
+<p>参考ページ<br /><a href="http://cpprefjp.github.io/reference/typeinfo/type_info.html">cpprefjp - C++ Library Reference　typeinfo</a></p>
+</blockquote>
+<h2 id="typeid">typeid</h2>
+<p>typeidを使うと、型の情報を得ることが出来る。<br />typeidは型名、変数どちらにも使うことが出来る。<br />name()関数は型名を返す。<br />==演算子を用いてtypeidで得た型が同じかどうかを調べられる。<br />下の例の <em>ptr1 のように、実行時の型情報も得ることが可能である。<br />Baseのvertualを消し、Derived1とDerived2を非多相的なクラスにすると、 </em>ptr1はBaseクラスと表示される。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;memory&gt;</span>
+
+
+<span class="kw">class</span> Base
+{
+<span class="kw">public</span>:
+    Base(){
+
+    }
+    <span class="kw">virtual</span> <span class="dt">void</span> update() = <span class="dv">0</span>;
+};
+
+
+<span class="kw">class</span> Derived1 : <span class="kw">public</span> Base
+{
+<span class="kw">public</span>:
+    Derived1() :
+        Base()
+    {
+    }
+    <span class="dt">void</span> update(){}
+};
+
+
+<span class="kw">class</span> Derived2 : <span class="kw">public</span> Base
+{
+<span class="kw">public</span>:
+    Derived2() :
+        Base()
+    {
+    }
+    <span class="dt">void</span> update(){}
+};
+
+<span class="dt">int</span> main()
+{
+    Derived1 derived1;
+
+    std::cout &lt;&lt; <span class="kw">typeid</span>(Base).name() &lt;&lt; std::endl;
+    std::cout &lt;&lt; <span class="kw">typeid</span>(Derived1).name() &lt;&lt; std::endl;
+    std::cout &lt;&lt; <span class="kw">typeid</span>(derived1).name() &lt;&lt; std::endl;
+    std::cout &lt;&lt; std::endl;
+
+    std::shared_ptr&lt;Base&gt; ptr1 = std::make_shared &lt; Derived1 &gt;();
+
+    std::cout &lt;&lt; <span class="kw">typeid</span>(ptr1).name() &lt;&lt; std::endl;
+    std::cout &lt;&lt; <span class="kw">typeid</span>(*ptr1).name() &lt;&lt; std::endl;
+    std::cout &lt;&lt; std::endl;
+
+    std::cout &lt;&lt; (<span class="kw">typeid</span>(Derived1) == <span class="kw">typeid</span>(Derived1)) &lt;&lt; std::endl;
+    std::cout &lt;&lt; (<span class="kw">typeid</span>(Derived1) == <span class="kw">typeid</span>(Derived2)) &lt;&lt; std::endl;
+    std::cout &lt;&lt; (<span class="kw">typeid</span>(*ptr1) == <span class="kw">typeid</span>(Derived1)) &lt;&lt; std::endl;
+    std::cout &lt;&lt; (<span class="kw">typeid</span>(*ptr1) == <span class="kw">typeid</span>(Derived2)) &lt;&lt; std::endl;
+
+    <span class="kw">return</span> <span class="dv">0</span>;
+}</code></pre>
+<h2 id="関連項目">関連項目</h2>
+<ul>
+<li>type_traitsヘッダー<br />&gt;<a href="http://cpprefjp.github.io/reference/type_traits.html">cpprefjp - C++ Library Reference　type_traits</a></li>
+</ul>
+</body>
+</html>

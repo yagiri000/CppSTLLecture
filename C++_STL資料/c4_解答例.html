@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="github_hu.css" type="text/css" />
+</head>
+<body>
+<h1 id="c_stl資料">C++_STL資料</h1>
+<h2 id="今回の内容">今回の内容</h2>
+<ul>
+<li>解答例<br />各回の演習問題の解答例です。</li>
+</ul>
+<h2 id="map">map</h2>
+<ul>
+<li>演習問題</li>
+</ul>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;map&gt;</span>
+<span class="ot">#include &lt;string&gt;</span>
+
+<span class="kw">class</span> Color{
+<span class="kw">public</span>:
+    <span class="dt">int</span> r;
+    <span class="dt">int</span> g;
+    <span class="dt">int</span> b;
+
+    Color(<span class="dt">int</span> r_, <span class="dt">int</span> g_, <span class="dt">int</span> b_) :
+        r(r_),
+        g(g_),
+        b(b_)
+    {
+    }
+};
+
+
+<span class="dt">void</span> show_color(<span class="dt">const</span> Color&amp; col){
+    std::cout &lt;&lt; <span class="st">&quot;(r, g, b) = (&quot;</span> &lt;&lt; col.r &lt;&lt; <span class="st">&quot;, &quot;</span> &lt;&lt; col.g &lt;&lt; <span class="st">&quot;, &quot;</span> &lt;&lt; col.b &lt;&lt; <span class="st">&quot;)&quot;</span> &lt;&lt; std::endl;
+}
+
+
+<span class="dt">int</span> main()
+{
+    std::map&lt;std::string, Color&gt; colorMap;
+
+    colorMap.emplace(<span class="st">&quot;red&quot;</span>, Color(<span class="dv">255</span>, <span class="dv">0</span>, <span class="dv">0</span>));
+    colorMap.emplace(<span class="st">&quot;green&quot;</span>, Color(<span class="dv">0</span>, <span class="dv">255</span>, <span class="dv">0</span>));
+    colorMap.emplace(<span class="st">&quot;blue&quot;</span>, Color(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">255</span>));
+
+    <span class="kw">for</span> (<span class="kw">auto</span> i = colorMap.begin(); i != colorMap.end(); i++){
+        show_color(i-&gt;second);
+    }
+}</code></pre>
+<ul>
+<li>演習問題</li>
+</ul>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;map&gt;</span>
+<span class="ot">#include &lt;string&gt;</span>
+
+<span class="kw">class</span> Color{
+<span class="kw">public</span>:
+    <span class="dt">int</span> r;
+    <span class="dt">int</span> g;
+    <span class="dt">int</span> b;
+
+    Color(){}
+
+    Color(<span class="dt">int</span> r_, <span class="dt">int</span> g_, <span class="dt">int</span> b_) :
+        r(r_),
+        g(g_),
+        b(b_)
+    {
+    }
+};
+
+<span class="kw">class</span> ColorManager{
+<span class="kw">public</span>:
+    std::map&lt;std::string, Color&gt; colorMap;
+
+    <span class="co">//新しい色を登録する関数</span>
+    <span class="dt">void</span> add_color(<span class="dt">const</span> std::string&amp; key, <span class="dt">const</span> Color&amp; col){
+        colorMap.emplace(key, col);
+    }
+
+    Color get_color(<span class="dt">const</span> std::string&amp; key){
+        <span class="kw">return</span> colorMap[key];
+    }
+};
+
+<span class="dt">void</span> show_color(<span class="dt">const</span> Color&amp; col){
+    std::cout &lt;&lt; <span class="st">&quot;(r, g, b) = (&quot;</span> &lt;&lt; col.r &lt;&lt; <span class="st">&quot;, &quot;</span> &lt;&lt; col.g &lt;&lt; <span class="st">&quot;, &quot;</span> &lt;&lt; col.b &lt;&lt; <span class="st">&quot;)&quot;</span> &lt;&lt; std::endl;
+}
+
+<span class="dt">int</span> main()
+{
+    ColorManager c_mgr;
+
+    c_mgr.add_color(<span class="st">&quot;red&quot;</span>, Color(<span class="dv">255</span>, <span class="dv">0</span>, <span class="dv">0</span>));
+    c_mgr.add_color(<span class="st">&quot;green&quot;</span>, Color(<span class="dv">0</span>, <span class="dv">255</span>, <span class="dv">0</span>));
+    c_mgr.add_color(<span class="st">&quot;blue&quot;</span>, Color(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">255</span>));
+
+    show_color(c_mgr.get_color(<span class="st">&quot;red&quot;</span>));
+}</code></pre>
+<h2 id="ラムダ式">ラムダ式</h2>
+<ul>
+<li>演習問題</li>
+</ul>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;functional&gt;</span>
+
+<span class="dt">int</span> main()
+{
+    <span class="co">// 関数を代入</span>
+    std::function&lt;<span class="dt">int</span>(<span class="dt">int</span>, <span class="dt">int</span>)&gt; func = [](<span class="dt">int</span> x, <span class="dt">int</span> y){
+        <span class="kw">return</span> x + y;
+    };
+
+    <span class="co">//結果を代入</span>
+    <span class="dt">int</span> result = func(<span class="dv">3</span>, <span class="dv">4</span>);
+
+    <span class="co">//結果を出力</span>
+    std::cout &lt;&lt; result &lt;&lt; std::endl;
+}</code></pre>
+<ul>
+<li>演習問題</li>
+</ul>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;vector&gt;</span>
+<span class="ot">#include &lt;functional&gt;</span>
+
+<span class="dt">int</span> main()
+{
+    std::vector &lt; std::function&lt;<span class="dt">double</span>(<span class="dt">double</span>, <span class="dt">double</span>)&gt;&gt; f_vec;
+
+    <span class="co">//和差積商の関数を登録</span>
+    f_vec.emplace_back(
+        [](<span class="dt">double</span> x, <span class="dt">double</span> y){
+        <span class="kw">return</span> x + y;
+    });
+    f_vec.emplace_back(
+        [](<span class="dt">double</span> x, <span class="dt">double</span> y){
+        <span class="kw">return</span> x - y;
+    });
+    f_vec.emplace_back(
+        [](<span class="dt">double</span> x, <span class="dt">double</span> y){
+        <span class="kw">return</span> x * y;
+    });
+    f_vec.emplace_back(
+        [](<span class="dt">double</span> x, <span class="dt">double</span> y){
+        <span class="kw">return</span> x / y;
+    });
+
+    <span class="co">//引数に10と3を指定して実際使う</span>
+    <span class="kw">for</span> (<span class="kw">auto</span> i = f_vec.begin(); i &lt; f_vec.end(); i++){
+        std::cout &lt;&lt; (*i)(<span class="dv">10</span>, <span class="dv">3</span>) &lt;&lt; std::endl;
+    }
+}</code></pre>
+</body>
+</html>

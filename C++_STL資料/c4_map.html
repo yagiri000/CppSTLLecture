@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="github_hu.css" type="text/css" />
+</head>
+<body>
+<h1 id="c_stl資料">C++_STL資料</h1>
+<h2 id="今回の内容">今回の内容</h2>
+<ul>
+<li>std::map</li>
+</ul>
+<blockquote>
+<p>参考ページ<br /><a href="http://cpprefjp.github.io/reference/map/map.html">cpprefjp - C++ Library Reference map</a></p>
+</blockquote>
+<h2 id="stdmap">std::map</h2>
+<p>std::mapを使うと、2つの要素を関連付けて登録できる。<br />例えば、通常の配列は整数の番号と要素が関連付けられていたが、mapを使えば任意の型同士の要素を関連付けることができる。<br />例：文字列と自作した型を関連付ける<br />std::mapを使用するには、mapヘッダーをインクルードする。<br />std::mapは標準ライブラリのコンテナの一つである。コンテナはデータ構造を表現し、vectorもコンテナの一種である。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;map&gt;</span>
+<span class="ot">#include &lt;string&gt;</span>
+
+<span class="dt">int</span> main()
+{
+    std::map&lt;std::string, <span class="dt">double</span>&gt; d_map;
+    
+    <span class="co">//配列表記を用いて登録</span>
+    d_map[<span class="st">&quot;PI&quot;</span>] = <span class="fl">3.</span><span class="dv">14</span>;
+    d_map[<span class="st">&quot;e&quot;</span>] = <span class="fl">2.</span><span class="dv">17</span>;
+
+    <span class="co">//表示</span>
+    std::cout &lt;&lt; d_map[<span class="st">&quot;PI&quot;</span>] &lt;&lt; std::endl;
+    std::cout &lt;&lt; d_map[<span class="st">&quot;e&quot;</span>] &lt;&lt; std::endl;
+}</code></pre>
+<p>上記の例だと配列表記を用いて値を登録していたが、以下のようにemplace関数を用いて値を登録することもできる。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;map&gt;</span>
+<span class="ot">#include &lt;string&gt;</span>
+
+<span class="dt">int</span> main()
+{
+    std::map&lt;std::string, <span class="dt">double</span>&gt; d_map;
+    
+    <span class="co">//emplace関数を用いて登録</span>
+    d_map.emplace(<span class="st">&quot;PI&quot;</span>, <span class="fl">3.</span><span class="dv">14</span>);
+    d_map.emplace(<span class="st">&quot;e&quot;</span>, <span class="fl">2.</span><span class="dv">17</span>);
+
+    <span class="co">//表示</span>
+    std::cout &lt;&lt; d_map[<span class="st">&quot;PI&quot;</span>] &lt;&lt; std::endl;
+    std::cout &lt;&lt; d_map[<span class="st">&quot;e&quot;</span>] &lt;&lt; std::endl;
+}</code></pre>
+<h2 id="at関数">at関数</h2>
+<p>以下のように配列表記で書くと、誤って登録していないキーにアクセスしようとした時に、そのキーが新しく登録されてしまう。<br />以下の例では、誤ってaaaというキーでmapから値を取り出そうとした。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;map&gt;</span>
+<span class="ot">#include &lt;string&gt;</span>
+
+<span class="dt">int</span> main()
+{
+    std::map&lt;std::string, <span class="dt">double</span>&gt; d_map;
+    
+    <span class="co">//emplace関数を用いて登録</span>
+    d_map.emplace(<span class="st">&quot;PI&quot;</span>, <span class="fl">3.</span><span class="dv">14</span>);
+    d_map.emplace(<span class="st">&quot;e&quot;</span>, <span class="fl">2.</span><span class="dv">17</span>);
+
+    <span class="co">//表示</span>
+    std::cout &lt;&lt; d_map[<span class="st">&quot;PI&quot;</span>] &lt;&lt; std::endl;
+    std::cout &lt;&lt; d_map[<span class="st">&quot;e&quot;</span>] &lt;&lt; std::endl;
+    
+    <span class="co">//新しくaaaが登録される（値は0）</span>
+    std::cout &lt;&lt; d_map[<span class="st">&quot;aaa&quot;</span>] &lt;&lt; std::endl;
+}</code></pre>
+<p>at関数を使うと、登録されていないキーにアクセスしようとした時にエラーが出る。<br />（それ以外はだいたい配列表記と同じ）</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;map&gt;</span>
+<span class="ot">#include &lt;string&gt;</span>
+
+<span class="dt">int</span> main()
+{
+    std::map&lt;std::string, <span class="dt">double</span>&gt; d_map;
+    
+    <span class="co">//emplace関数を用いて登録</span>
+    d_map.emplace(<span class="st">&quot;PI&quot;</span>, <span class="fl">3.</span><span class="dv">14</span>);
+    d_map.emplace(<span class="st">&quot;e&quot;</span>, <span class="fl">2.</span><span class="dv">17</span>);
+
+    <span class="co">//at関数を用いて表示</span>
+    std::cout &lt;&lt; d_map.at(<span class="st">&quot;PI&quot;</span>) &lt;&lt; std::endl;
+    std::cout &lt;&lt; d_map.at(<span class="st">&quot;e&quot;</span>) &lt;&lt; std::endl;
+    
+    <span class="co">//コメントを外すとエラーが出る</span>
+    <span class="co">//std::cout &lt;&lt; d_map.at(&quot;aaa&quot;) &lt;&lt; std::endl;</span>
+}</code></pre>
+<h2 id="イテレータを用いたmapへのアクセス">イテレータを用いたmapへのアクセス</h2>
+<p>以下の例では、for文を用いてmapの各要素を表示している。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;map&gt;</span>
+<span class="ot">#include &lt;string&gt;</span>
+
+<span class="dt">int</span> main()
+{
+    std::map&lt;std::string, <span class="dt">double</span>&gt; d_map;
+    
+    <span class="co">//emplace関数を用いて登録</span>
+    d_map.emplace(<span class="st">&quot;PI&quot;</span>, <span class="fl">3.</span><span class="dv">14</span>);
+    d_map.emplace(<span class="st">&quot;e&quot;</span>, <span class="fl">2.</span><span class="dv">17</span>);
+    d_map.emplace(<span class="st">&quot;one&quot;</span>, <span class="fl">1.</span><span class="bn">00</span>);
+
+    <span class="co">//表示</span>
+    <span class="kw">for</span> (<span class="kw">auto</span> i = d_map.begin(); i != d_map.end(); i++){
+        std::cout &lt;&lt; i-&gt;first &lt;&lt; <span class="st">&quot; &quot;</span> &lt;&lt; i-&gt;second &lt;&lt; std::endl;
+    }
+}</code></pre>
+<h2 id="find関数">find関数</h2>
+<p>find関数は、map内でキーが x である要素を検索し、見つかった場合はそれへのイテレータを返し、見つからなかった場合は end() (コンテナの最後の要素の次）を指すイテレータを返す。<br />(mapのイテレータ)-&gt;secondでmapの要素にアクセスすることができ、<br />(mapのイテレータ)-&gt;firstでmapのキーにアクセスできる。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;map&gt;</span>
+<span class="ot">#include &lt;string&gt;</span>
+
+<span class="dt">int</span> main()
+{
+    std::map&lt;std::string, <span class="dt">double</span>&gt; d_map;
+    
+    <span class="co">//emplace関数を用いて登録</span>
+    d_map.emplace(<span class="st">&quot;PI&quot;</span>, <span class="fl">3.</span><span class="dv">14</span>);
+    d_map.emplace(<span class="st">&quot;e&quot;</span>, <span class="fl">2.</span><span class="dv">17</span>);
+    d_map.emplace(<span class="st">&quot;one&quot;</span>, <span class="fl">1.</span><span class="bn">00</span>);
+
+    <span class="co">//find関数を用いる</span>
+    <span class="kw">auto</span> iter = d_map.find(<span class="st">&quot;PI&quot;</span>);
+    std::cout &lt;&lt; iter-&gt;first &lt;&lt; std::endl;
+    std::cout &lt;&lt; iter-&gt;second &lt;&lt; std::endl;
+}</code></pre>
+<p>返り値がend()かを調べることによって、要素があるかどうかを調べることができる。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;map&gt;</span>
+<span class="ot">#include &lt;string&gt;</span>
+
+<span class="dt">int</span> main()
+{
+    std::map&lt;std::string, <span class="dt">double</span>&gt; d_map;
+    
+    <span class="co">//emplace関数を用いて登録</span>
+    d_map.emplace(<span class="st">&quot;PI&quot;</span>, <span class="fl">3.</span><span class="dv">14</span>);
+    d_map.emplace(<span class="st">&quot;e&quot;</span>, <span class="fl">2.</span><span class="dv">17</span>);
+
+    <span class="co">//find関数を用いる</span>
+    <span class="kw">auto</span> iter = d_map.find(<span class="st">&quot;PI&quot;</span>);
+
+    <span class="kw">if</span> (iter != d_map.end()){
+        std::cout &lt;&lt; iter-&gt;first &lt;&lt; <span class="st">&quot; &quot;</span> &lt;&lt; iter-&gt;second &lt;&lt; std::endl;
+    }
+    <span class="kw">else</span>{
+        std::cout &lt;&lt; <span class="st">&quot;見つかりませんでした&quot;</span> &lt;&lt; std::endl;
+    }
+
+
+    <span class="co">//find関数を用いる</span>
+    <span class="kw">auto</span> iter2 = d_map.find(<span class="st">&quot;aaa&quot;</span>);
+
+    <span class="kw">if</span> (iter2 != d_map.end()){
+        std::cout &lt;&lt; iter2-&gt;first &lt;&lt; <span class="st">&quot; &quot;</span> &lt;&lt; iter2-&gt;second &lt;&lt; std::endl;
+    }
+    <span class="kw">else</span>{
+        std::cout &lt;&lt; <span class="st">&quot;見つかりませんでした&quot;</span> &lt;&lt; std::endl;
+    }
+}</code></pre>
+<h2 id="unorderd_map">unorderd_map</h2>
+<p>mapより探索速度が少し速く、中で値がソートされていないunorderd_mapというものがある。<br />unorderd_mapを使うには、unorderd_mapヘッダーをインクルードする。その他の使い方はmapと同じである。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;string&gt;</span>
+<span class="ot">#include &lt;unordered_map&gt;</span>
+
+<span class="dt">int</span> main()
+{
+    std::unordered_map&lt;std::string, <span class="dt">double</span>&gt; d_map;
+
+    <span class="co">//emplace関数を用いて登録</span>
+    d_map.emplace(<span class="st">&quot;aaa&quot;</span>, <span class="fl">1.</span><span class="bn">00</span>);
+    d_map.emplace(<span class="st">&quot;ccc&quot;</span>, <span class="fl">2.</span><span class="bn">00</span>);
+    d_map.emplace(<span class="st">&quot;bbb&quot;</span>, <span class="fl">3.</span><span class="bn">00</span>);
+
+    <span class="co">//表示</span>
+    <span class="kw">for</span> (<span class="kw">auto</span> i = d_map.begin(); i != d_map.end(); i++){
+        std::cout &lt;&lt; i-&gt;first &lt;&lt; <span class="st">&quot; &quot;</span> &lt;&lt; i-&gt;second &lt;&lt; std::endl;
+    }
+}</code></pre>
+<h2 id="演習問題">演習問題</h2>
+<ol style="list-style-type: decimal">
+<li><p>以下の様なクラスColorを用意した。string型がキーでColor型を要素に持つマップを用意し、&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;を登録し、それぞれのr, g, bを表示せよ。<br />ちなみにredは(r=255, g = 0, b = 0)である。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">class</span> Color{
+<span class="kw">public</span>:
+    <span class="dt">int</span> r;
+    <span class="dt">int</span> g;
+    <span class="dt">int</span> b;
+
+    Color(<span class="dt">int</span> r_, <span class="dt">int</span> g_, <span class="dt">int</span> b_) :
+        r(r_),
+        g(g_),
+        b(b_)
+    {
+    }
+};</code></pre>
+<blockquote>
+<p>r,g,bを一つ一つ表示するのは面倒なので、以下の関数を使ってよい。</p>
+</blockquote>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="dt">void</span> show_color(<span class="dt">const</span> Color&amp; col){
+    std::cout &lt;&lt; <span class="st">&quot;(r, g, b) = (&quot;</span> &lt;&lt; col.r &lt;&lt; <span class="st">&quot;, &quot;</span> &lt;&lt; col.g &lt;&lt; <span class="st">&quot;, &quot;</span> &lt;&lt; col.b &lt;&lt; <span class="st">&quot;)&quot;</span> &lt;&lt; std::endl;
+}</code></pre></li>
+<li><p>色を管理するColorManagerクラスを作ろう。ColorManagerクラスは、上記のmapをメンバに持ち、以下の関数を持つクラスである。</p>
+<ul>
+<li><p>void add_color(const std::string&amp; key, const Color&amp; col)<br />新しい色を登録する関数。</p></li>
+<li><p>Color get_color(const std::string&amp; key)<br />指定された色のクラスを返す関数（Colorクラスを返す)</p></li>
+</ul></li>
+</ol>
+<h2 id="演習問題dxlib">演習問題(DxLib)</h2>
+<p>「string型のキー、int型の要素を持つマップ」をメンバに持ち、画像を管理するクラスを作れ。<br />※DxLibの画像ハンドルはint型である。</p>
+<blockquote>
+<p>ヒント：必要な関数</p>
+</blockquote>
+<ul>
+<li>void add_handle(std::string key, int graphHandle)<br />新しい画像ハンドルを登録する関数<br /></li>
+<li>int get_handle(std::string key)<br />キーを渡して画像ハンドルを取得する関数</li>
+</ul>
+</body>
+</html>

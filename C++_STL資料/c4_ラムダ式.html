@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="github_hu.css" type="text/css" />
+</head>
+<body>
+<h1 id="c_stl資料">C++_STL資料</h1>
+<h2 id="今回の内容">今回の内容</h2>
+<ul>
+<li>std::function</li>
+<li>ラムダ式(キャプチャ)</li>
+</ul>
+<blockquote>
+<p>参考ページ<br /><a href="http://cpprefjp.github.io/reference/functional/function.html">cpprefjp - C++ Library Reference function (C++11)</a><br /><a href="http://d.hatena.ne.jp/gintenlabo/20130526/1369565989">C++14 のラムダ式 完全解説</a></p>
+</blockquote>
+<h2 id="stdfunction">std::function</h2>
+<p>functionalヘッダーをインクルードすると、関数、ラムダ式を登録できる変数、functionが使用できる。<br />functionは、広義の関数ポインタである。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;functional&gt;</span>
+
+<span class="dt">int</span> twice(<span class="dt">int</span> x) { 
+    <span class="kw">return</span> x * <span class="dv">2</span>; 
+}
+
+<span class="dt">int</span> main()
+{
+    <span class="co">// 関数を代入</span>
+    std::function&lt;<span class="dt">int</span>(<span class="dt">int</span>)&gt; func = twice;
+
+    <span class="co">//結果を代入</span>
+    <span class="dt">int</span> result = func(<span class="dv">3</span>);
+
+    <span class="co">//結果を出力</span>
+    std::cout &lt;&lt; result &lt;&lt; std::endl;
+}</code></pre>
+<p>ラムダ式も登録することができる。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;functional&gt;</span>
+
+<span class="dt">int</span> main()
+{
+    <span class="co">// 関数を代入</span>
+    std::function&lt;<span class="dt">int</span>(<span class="dt">int</span>)&gt; func = [](<span class="dt">int</span> x){
+        <span class="kw">return</span> x * <span class="dv">2</span>;
+    };
+
+    <span class="co">//結果を代入</span>
+    <span class="dt">int</span> result = func(<span class="dv">3</span>);
+
+    <span class="co">//結果を出力</span>
+    std::cout &lt;&lt; result &lt;&lt; std::endl;
+}</code></pre>
+<p>登録する関数が複数の引数を取る場合、以下のようになる。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;functional&gt;</span>
+
+<span class="dt">int</span> main()
+{
+    <span class="co">// 関数を代入</span>
+    std::function&lt;<span class="dt">int</span>(<span class="dt">int</span>, <span class="dt">int</span>)&gt; func = [](<span class="dt">int</span> x, <span class="dt">int</span> y){
+        <span class="kw">return</span> x * y;
+    };
+
+    <span class="co">//結果を代入</span>
+    <span class="dt">int</span> result = func(<span class="dv">3</span>, <span class="dv">4</span>);
+
+    <span class="co">//結果を出力</span>
+    std::cout &lt;&lt; result &lt;&lt; std::endl;
+}</code></pre>
+<blockquote>
+<p>書き方</p>
+</blockquote>
+<pre><code>std::function&lt; 返り値の型(引数1の型, 引数2の型, …) &gt;  変数名  </code></pre>
+<h2 id="演習問題">演習問題</h2>
+<ol style="list-style-type: decimal">
+<li><p>2つの引数を取り、それらの和を返すラムダ式を作り、std::function型の変数に入れ、実際使って結果を確認せよ。</p></li>
+<li><p>2つのdouble型の引数を取り、それらの和、差、積、商をdouble型で返すラムダ式をそれぞれ作り、それらをstd::function型のvectorに入れ、for文でvectorを回すことにより動作を確認せよ。(今回は商を出すのでdouble型にした。)</p></li>
+</ol>
+<h2 id="参照キャプチャ">参照キャプチャ</h2>
+<p>通常、ラムダ式内でローカル変数を使用することは出来ない。<br />（グローバル変数や static 変数， constexpr を用いたローカル変数などは使うことができる。）</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="co">//！！！以下のコードはコンパイルエラーになる！！！</span>
+<span class="ot">#include &lt;iostream&gt;</span>
+
+<span class="dt">int</span> main()
+{
+    <span class="dt">int</span> hoge = <span class="dv">100</span>;
+
+    <span class="co">//hogeがローカル変数なのでコンパイルエラー</span>
+    <span class="kw">auto</span> f = [] {
+        hoge++;
+    };
+}</code></pre>
+<p>そこで、ラムダ式の機能である参照キャプチャを用いると、ローカル変数を使用することができる。<br />参照キャプチャを用いると、元のローカル変数も書き換わるので注意。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+
+<span class="dt">int</span> main()
+{
+    <span class="dt">int</span> hoge = <span class="dv">10</span>;
+
+    <span class="co">//参照キャプチャを使用</span>
+    <span class="kw">auto</span> f = [&amp;] {
+        hoge += <span class="dv">4</span>;
+        std::cout &lt;&lt; hoge &lt;&lt; std::endl;
+    };
+
+    <span class="co">//関数を実行</span>
+    f();
+
+    <span class="co">//hogeの値を出力</span>
+    std::cout &lt;&lt; hoge &lt;&lt; std::endl;
+}</code></pre>
+<blockquote>
+<p>書き方<br />[] の部分を [&amp;] にする。</p>
+</blockquote>
+<h2 id="演習問題dxライブラリ">演習問題(DXライブラリ)</h2>
+<ol style="list-style-type: decimal">
+<li>押されたら登録された関数が実行される、ボタンクラスを作成せよ。<br />ボタンクラスはstd::function型の変数をメンバに持ち、コンストラクタまたは登録用の関数を用いて登録された関数を、あとで押された時に実行する。</li>
+</ol>
+</body>
+</html>

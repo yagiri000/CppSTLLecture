@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="github_hu.css" type="text/css" />
+</head>
+<body>
+<h1 id="c_stl資料">C++_STL資料</h1>
+<h2 id="今回の内容">今回の内容</h2>
+<ul>
+<li>std::max, std::min</li>
+</ul>
+<blockquote>
+<p>参考ページ<br /><a href="http://cpprefjp.github.io/reference/algorithm/max.html">cpprefjp - C++ Reference Site リファレンス algorithm max</a></p>
+</blockquote>
+<h2 id="stdmax-stdmin">std::max, std::min</h2>
+<p>std::maxは2値、または複数の値の最大値を返す。<br />minは最小値を返す。<br />std::maxを使うにはalgorithmヘッダーをインクルードする。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;algorithm&gt;</span>
+
+<span class="dt">int</span> main()
+{
+    <span class="dt">int</span> result1 = std::max(<span class="dv">2</span>, <span class="dv">3</span>);
+    std::cout &lt;&lt; result1 &lt;&lt; std::endl;
+
+    <span class="dt">int</span> result2 = std::max({ <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span> });
+    std::cout &lt;&lt; result2 &lt;&lt; std::endl;
+
+    <span class="dt">double</span> result3 = std::max&lt;<span class="dt">double</span>&gt;(<span class="dv">2</span>, <span class="fl">3.</span><span class="dv">14</span>);
+    std::cout &lt;&lt; result3 &lt;&lt; std::endl;
+
+
+    <span class="co">//コメントアウトを外すとコンパイルエラー</span>
+    <span class="co">//異なる型を自動的に判定は出来ない。上記result3のように指定することが必要</span>
+    <span class="co">//int result4 = std::max(2, 3.14);</span>
+    <span class="co">//std::cout &lt;&lt; result4 &lt;&lt; std::endl;</span>
+
+    <span class="kw">return</span> <span class="dv">0</span>;
+}</code></pre>
+<p>以下の様なコードをいちいち書く必要がないので便利である。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+
+<span class="dt">int</span> main()
+{
+    <span class="dt">int</span> a = <span class="dv">2</span>;
+    <span class="dt">int</span> b = <span class="dv">3</span>;
+
+    <span class="dt">int</span> max = a;
+    <span class="kw">if</span> (b &gt; a){
+        max = b;
+    }
+
+    std::cout &lt;&lt; max &lt;&lt; std::endl;
+
+    <span class="kw">return</span> <span class="dv">0</span>;
+}</code></pre>
+<p>std::maxは「&lt;」演算子がオーバーロードされているクラスなら自作クラスでも使用可能である。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;algorithm&gt;</span>
+
+<span class="kw">class</span> Val{
+<span class="kw">public</span>:
+    <span class="dt">double</span> x;
+    Val(<span class="dt">double</span> x_){
+        x = x_;
+    }
+
+    <span class="dt">bool</span> <span class="kw">operator</span>&lt;(<span class="dt">const</span> Val &amp;a) <span class="dt">const</span>{
+        <span class="kw">return</span> <span class="kw">this</span>-&gt;x &lt; a.x;
+    }
+};
+
+<span class="dt">int</span> main()
+{
+    Val a(<span class="fl">2.</span><span class="dv">0</span>);
+    Val b(<span class="fl">3.</span><span class="dv">0</span>);
+
+    Val maxVal = std::max(a, b);
+
+    std::cout &lt;&lt; maxVal.x &lt;&lt; std::endl;
+
+    <span class="kw">return</span> <span class="dv">0</span>;
+}</code></pre>
+<p>std::maxは「&lt;」演算子がオーバーロードされていないクラスでも、第三引数に大小比較の叙述関数が入っていれば使用可能である。<br />叙述関数とは、真偽値(trueまたはfalse)を返す関数のこと。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;algorithm&gt;</span>
+
+<span class="kw">class</span> Val{
+<span class="kw">public</span>:
+    <span class="dt">double</span> x;
+    Val(<span class="dt">double</span> x_){
+        x = x_;
+    }
+};
+
+<span class="dt">int</span> main()
+{
+    Val a(<span class="fl">2.</span><span class="dv">0</span>);
+    Val b(<span class="fl">3.</span><span class="dv">0</span>);
+
+    Val maxVal = std::max(a, b, 
+        [](<span class="dt">const</span> Val &amp;a, <span class="dt">const</span> Val &amp;b){
+        <span class="kw">return</span> a.x &lt; b.x;
+    }
+    );
+
+    std::cout &lt;&lt; maxVal.x &lt;&lt; std::endl;
+
+    <span class="kw">return</span> <span class="dv">0</span>;
+}</code></pre>
+</body>
+</html>

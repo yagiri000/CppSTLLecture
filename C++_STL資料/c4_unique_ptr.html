@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="github_hu.css" type="text/css" />
+</head>
+<body>
+<h1 id="c_stl資料">C++_STL資料</h1>
+<h2 id="今回の内容">今回の内容</h2>
+<ul>
+<li>std::unique_ptr</li>
+</ul>
+<blockquote>
+<p>参考ページ<br /><a href="http://qiita.com/hmito/items/db3b14917120b285112f">C++11スマートポインタ入門</a><br /><a href="http://cpprefjp.github.io/reference/memory/unique_ptr.html">cpprefjp - C++ Reference Site リファレンス memory unique_ptr (C++11)</a></p>
+</blockquote>
+<h2 id="stdunique_ptr">std::unique_ptr</h2>
+<p>newしたポインタは必ずdeleteしなくてはいけない。これは非常に面倒だし、忘れるとメモリリークの原因になる。そんな時に便利なのがスマートポインタだ。 スマートポインタはほぼ通常のポインタと同じ使い方でしかも適切なタイミングで自動的にdeleteされる。<br />unique_ptr, shared_ptr, weak_ptrをまとめてスマートポインタと呼ぶ。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;memory&gt;</span>
+
+<span class="kw">class</span> Hoge{
+<span class="kw">public</span>:
+    <span class="dt">int</span> x;
+    Hoge(<span class="dt">int</span> x_) :
+        x(x_)
+    {
+        std::cout &lt;&lt; <span class="st">&quot;コンストラクタが呼ばれました&quot;</span> &lt;&lt; std::endl;
+    }
+
+    ~Hoge(){
+        std::cout &lt;&lt; <span class="st">&quot;デストラクタが呼ばれました&quot;</span> &lt;&lt; std::endl;
+    }
+};
+
+
+<span class="dt">int</span> main(<span class="dt">void</span>){
+
+    std::cout &lt;&lt; <span class="st">&quot;メイン関数に入りました&quot;</span> &lt;&lt; std::endl;
+
+    {
+        std::cout &lt;&lt; <span class="st">&quot;スコープに入りました&quot;</span> &lt;&lt; std::endl;
+        std::unique_ptr&lt;Hoge&gt; ptr(std::make_unique&lt;Hoge&gt;(<span class="dv">10</span>));
+        std::cout &lt;&lt; <span class="st">&quot;objのxの値:&quot;</span> &lt;&lt; ptr-&gt;x &lt;&lt; std::endl;
+        std::cout &lt;&lt; <span class="st">&quot;スコープを抜けます&quot;</span> &lt;&lt; std::endl;
+    }
+
+    std::cout &lt;&lt; <span class="st">&quot;メイン関数を抜けます&quot;</span> &lt;&lt; std::endl;
+
+    <span class="kw">return</span> <span class="dv">0</span>;
+}</code></pre>
+<p>std::shared_ptrとstd::unique_ptrの違いは、コピーが可能かどうかである。<br />unique_ptrはコピーが不可能である。std::moveを使って所有権を移動することができる。<br />また、std::unique_ptrの方がstd::shared_ptrより処理速度が早い。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;memory&gt;</span>
+
+<span class="kw">class</span> Hoge{
+<span class="kw">public</span>:
+    <span class="dt">int</span> x;
+    Hoge(<span class="dt">int</span> x_) :
+        x(x_)
+    {
+    }
+};
+
+
+<span class="dt">int</span> main(<span class="dt">void</span>){
+
+    std::unique_ptr&lt;Hoge&gt; ptr1(std::make_unique&lt;Hoge&gt;(<span class="dv">10</span>));
+
+    <span class="co">//コメントアウトを外すとコンパイルエラー</span>
+    <span class="co">//コピー不可能</span>
+    <span class="co">//std::unique_ptr&lt;Hoge&gt; ptr2 = ptr1;</span>
+
+
+    <span class="co">//std::moveを使用することで所有権の移動が可能</span>
+    std::unique_ptr&lt;Hoge&gt; ptr2 = std::move(ptr1);
+    std::cout &lt;&lt; ptr2-&gt;x &lt;&lt; std::endl;
+
+
+    <span class="co">//コメントアウトを外すと実行時エラー</span>
+    <span class="co">//ptr1は何も指していない</span>
+    <span class="co">//std::cout &lt;&lt; ptr1-&gt;x &lt;&lt; std::endl;</span>
+
+
+    <span class="co">//if文の中に入れることで中身があるか判定可能</span>
+    <span class="kw">if</span> (ptr1){
+        std::cout &lt;&lt; <span class="st">&quot;ptr1中身あり&quot;</span> &lt;&lt; std::endl;
+    }
+    <span class="kw">else</span>{
+        std::cout &lt;&lt; <span class="st">&quot;ptr1中身なし&quot;</span> &lt;&lt; std::endl;
+    }
+
+    <span class="kw">if</span> (ptr2){
+        std::cout &lt;&lt; <span class="st">&quot;ptr2中身あり&quot;</span> &lt;&lt; std::endl;
+    }
+    <span class="kw">else</span>{
+        std::cout &lt;&lt; <span class="st">&quot;ptr2中身なし&quot;</span> &lt;&lt; std::endl;
+    }
+
+    <span class="kw">return</span> <span class="dv">0</span>;
+}</code></pre>
+<h2 id="vectorでの使用例">vectorでの使用例</h2>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;memory&gt;</span>
+<span class="ot">#include &lt;vector&gt;</span>
+
+<span class="kw">class</span> Hoge{
+<span class="kw">public</span>:
+    <span class="dt">int</span> x;
+    Hoge(<span class="dt">int</span> x_) :
+        x(x_)
+    {
+    }
+};
+
+<span class="dt">int</span> main(<span class="dt">void</span>)
+{
+    std::vector&lt;std::unique_ptr&lt;Hoge&gt;&gt; vec;
+
+    <span class="kw">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; <span class="dv">5</span>; i++){
+        vec.emplace_back(std::make_unique&lt;Hoge&gt;(i));
+    }
+
+    <span class="kw">for</span> (<span class="kw">auto</span> &amp;i = vec.begin(); i &lt; vec.end(); i++){
+        std::cout &lt;&lt; (**i).x &lt;&lt; std::endl;
+    }
+
+
+
+    <span class="kw">return</span> <span class="dv">0</span>;
+}</code></pre>
+<p>uniqur_ptrのvectorを持つクラスへ受け渡す例</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;vector&gt;</span>
+<span class="ot">#include &lt;memory&gt;</span>
+
+<span class="kw">class</span> Hoge{
+<span class="kw">public</span>:
+    <span class="dt">int</span> x;
+    Hoge(<span class="dt">int</span> x_) :
+        x(x_)
+    {
+    }
+};
+
+<span class="kw">class</span> HogeManager{
+<span class="kw">public</span>:
+    std::vector&lt;std::unique_ptr&lt;Hoge&gt;&gt; vec;
+    <span class="dt">void</span> add(std::unique_ptr&lt;Hoge&gt; ptr){
+        vec.emplace_back(std::move(ptr));
+    }
+    <span class="dt">void</span> show(){
+        <span class="kw">for</span> (<span class="kw">auto</span> &amp;i = vec.begin(); i &lt; vec.end(); i++){
+            std::cout &lt;&lt; (**i).x &lt;&lt; std::endl;
+        }
+    }
+};
+
+
+<span class="dt">int</span> main(<span class="dt">void</span>)
+{
+    HogeManager hogeManager;
+    <span class="kw">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; <span class="dv">5</span>; i++){
+        hogeManager.add(std::make_unique&lt;Hoge&gt;(i));
+    }
+    hogeManager.show();
+
+
+    <span class="kw">return</span> <span class="dv">0</span>;
+}</code></pre>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="github_hu.css" type="text/css" />
+</head>
+<body>
+<h1 id="c_stl資料">C++_STL資料</h1>
+<h2 id="今回の内容">今回の内容</h2>
+<ul>
+<li>using<br /></li>
+<li>range-based-forを用いたループ</li>
+<li>random</li>
+<li>staticメンバ</li>
+</ul>
+<h2 id="using">using</h2>
+<p>usingを使うと、型の名前の別名を定義することができる。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+
+<span class="kw">class</span> HogeManagerKeeper{
+<span class="kw">public</span>:
+    <span class="dt">void</span> update(){
+        std::cout &lt;&lt; <span class="st">&quot;HogeManagerKeeper update called&quot;</span> &lt;&lt; std::endl;
+    }
+};
+
+<span class="kw">using</span> HogeMK = HogeManagerKeeper;
+
+<span class="dt">int</span> main()
+{
+    HogeMK hoge;
+    hoge.update();
+}</code></pre>
+<h2 id="range-based-forを用いたループ">range-based-forを用いたループ</h2>
+<p>range-based-forを使うと、配列をまわすfor文が簡潔に書ける。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;vector&gt;</span>
+
+<span class="dt">int</span> main(){
+
+    std::vector&lt;<span class="dt">int</span>&gt; vec;
+ 
+    <span class="co">// 10個の要素を追加していく</span>
+    <span class="kw">for</span>(<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; <span class="dv">10</span>; ++i ){
+        vec.push_back(i);
+    }
+ 
+    <span class="co">//range-based-forを用いて出力</span>
+    <span class="kw">for</span>(<span class="dt">const</span> <span class="kw">auto</span>&amp; element: vec){
+        std::cout &lt;&lt; element &lt;&lt; std::endl;
+    }
+    
+ 
+    <span class="kw">return</span> <span class="dv">0</span>;
+
+}</code></pre>
+<blockquote>
+<p>書き方</p>
+</blockquote>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="kw">for</span>(型名 代入する変数: まわしたいコンテナ名){
+}</code></pre>
+<h2 id="random">random</h2>
+<p>Cで乱数を使うにはstdlib.hをインクルードし、rand()を使ったと思う。<br />rand()は線形合同法で乱数を生成しており、生成される数値に偏りが有り、周期が短く、乱数としては性能が良くない。<br />そこで、C++11では新しく乱数ライブラリrandomが追加された。randomはメルセンヌ・ツイスタで乱数を生成しており、randより良質な乱数を生成出来る。<br />また、指定した範囲の乱数を生成するといった機能もついている。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+<span class="ot">#include &lt;random&gt;</span>
+
+<span class="dt">int</span> main(<span class="dt">void</span>)
+{
+    <span class="co">// メルセンヌ・ツイスター法による擬似乱数生成器(mt19937)を、</span>
+    <span class="co">// ハードウェア乱数(random_device)をシードにして初期化</span>
+    std::random_device rd;
+    std::mt19937 mt(rd());
+
+    <span class="co">//一様分布生成器 uniform distributionを生成。生成範囲を指定できる</span>
+    std::uniform_int_distribution&lt;<span class="dt">int</span>&gt; dice(<span class="dv">1</span>, <span class="dv">6</span>);
+    std::uniform_real_distribution&lt;<span class="dt">double</span>&gt; pm(<span class="fl">-1.</span><span class="dv">0</span>, <span class="fl">1.</span><span class="dv">0</span>);
+
+    <span class="co">//乱数を出力</span>
+    <span class="kw">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; <span class="dv">10</span>; ++i) {
+        std::cout &lt;&lt; dice(mt) &lt;&lt; std::endl;
+    }
+    std::cout &lt;&lt; std::endl;
+
+    <span class="kw">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; <span class="dv">10</span>; ++i) {
+        std::cout &lt;&lt; pm(mt) &lt;&lt; std::endl;
+    }
+    std::cout &lt;&lt; std::endl;
+
+
+    <span class="kw">return</span> <span class="dv">0</span>;
+}</code></pre>
+<h2 id="staticメンバ">staticメンバ</h2>
+<p>staticメンバを使用すると、同じクラスの異なるインスタンス同士で、変数や関数を共有出来る。</p>
+<pre class="sourceCode cpp"><code class="sourceCode cpp"><span class="ot">#include &lt;iostream&gt;</span>
+
+<span class="kw">class</span> myclass{
+<span class="kw">public</span>:
+    <span class="dt">static</span> <span class="dt">int</span> x;
+    myclass(){
+
+    }
+};
+
+<span class="co">//クラス外でstatic変数を定義しなければいけない</span>
+<span class="dt">int</span> myclass::x;
+
+<span class="dt">int</span> main(){
+    
+    myclass obj1;
+    myclass obj2;
+
+    obj1.x = <span class="dv">64</span>;
+    
+    std::cout &lt;&lt; <span class="st">&quot;obj1のx : &quot;</span> &lt;&lt; obj1.x &lt;&lt; std::endl;
+
+    <span class="co">//obj2のxも書き換わっている</span>
+    std::cout &lt;&lt; <span class="st">&quot;obj2のx : &quot;</span> &lt;&lt;  obj2.x &lt;&lt; std::endl;
+
+    <span class="co">//直接表示できる</span>
+    std::cout &lt;&lt; <span class="st">&quot;直接表示 : &quot;</span> &lt;&lt;  myclass::x &lt;&lt; std::endl &lt;&lt; std::endl;
+    
+
+    <span class="co">//直接書き換えられる</span>
+    myclass::x = <span class="dv">100</span>;
+    
+    std::cout &lt;&lt; <span class="st">&quot;obj1のx : &quot;</span> &lt;&lt; obj1.x &lt;&lt; std::endl;
+    std::cout &lt;&lt; <span class="st">&quot;obj2のx : &quot;</span> &lt;&lt;  obj2.x &lt;&lt; std::endl;
+    std::cout &lt;&lt; <span class="st">&quot;直接表示 : &quot;</span> &lt;&lt;  myclass::x &lt;&lt; std::endl;
+
+    <span class="kw">return</span> <span class="dv">0</span>;
+}</code></pre>
+</body>
+</html>
